@@ -1,5 +1,8 @@
 .App {
   text-align: center;
+  background: rgb(168, 50, 10);
+  background: linear-gradient(90deg, rgba(168, 50, 10, 1) 11%, rgba(112, 30, 16, 1) 49%, rgba(226, 5, 6, 1) 100%);
+
 }
 
 .App-logo {
@@ -32,7 +35,19 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
+}
+
+.Movie-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 70px;
+}
+
+.bg-header {
+  background: rgb(33, 37, 41);
+  background: linear-gradient(0deg, rgba(33, 37, 41, 1) 0%, rgba(0, 0, 0, 1) 100%);
 }
