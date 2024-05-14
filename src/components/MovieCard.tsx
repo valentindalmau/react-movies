@@ -1,6 +1,5 @@
 import Card from 'react-bootstrap/Card';
 import { MovieDTO } from './movies.model';
-import { Link, useHistory } from 'react-router-dom';
 
 interface MovieCardProps {
     movie: MovieDTO;

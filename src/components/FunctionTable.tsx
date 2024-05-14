@@ -1,19 +1,27 @@
-import React, { useState } from 'react';
-import { Button, Dropdown, Form, Modal, Table } from 'react-bootstrap';
-import functionList from '../utils/Functions';
+import React, { useState, useEffect } from 'react';
+import { Button, Dropdown, Table } from 'react-bootstrap';
 import ModalElement from './ModalElement';
 import { FunctionDTO } from './function.model';
+import { addFunction, deleteFunction, getFunctions, updateFunction } from './apiService';
 
+const defaultIDSequentially = (functionslist: FunctionDTO[]) => {
+    if (functionslist.length > 0) {
+        // Obtener el último elemento de la lista functions usando slice
+        const lastFunction = functionslist.slice(-1)[0];
+
+        // Acceder al ID del último elemento
+        const lastFunctionId = lastFunction.id;
+        return lastFunctionId + 1
+
+    } else {
+        const lastFunctionId = 1
+        return lastFunctionId
+    }
+
+}
 const FunctionTable = () => {
     const [showInsert, setShowInsert] = useState(false);
-    const handleCloseInsert = () => setShowInsert(false);
-    const handleShowInsert = () => setShowInsert(true);
-    const [showEdit, setShowEdit] = useState(false);
-    const handleCloseEdit = () => setShowEdit(false);
-    const handleShowEdit = () => setShowEdit(true);
-    const initialFunctions = functionList
-    const [functions, setFunctions] = useState(initialFunctions);
-
+    const [functions, setFunctions] = useState<FunctionDTO[]>([]);
     const [editModalState, setEditModalState] = useState({
         show: false,
         functionId: 0,
@@ -21,22 +29,67 @@ const FunctionTable = () => {
         defaultDate: new Date(),
         defaultPrice: 0
     });
-    const deleteFunction = (id: number) => {
-        const updatedFunctions = functions.filter(func => func.id !== id);
-        const updatedFunctionsWithSequentialIds = updatedFunctions.map((func, index) => ({
-            ...func,
-            id: index + 1
-        }));
-        setFunctions(updatedFunctionsWithSequentialIds);
-    }
-    const addFunction = (newFunction: FunctionDTO) => {
-        setFunctions([...functions, newFunction]);
+
+    useEffect(() => {
+        fetchFunctions();
+    }, []);
+
+    const fetchFunctions = async () => {
+        try {
+            const data = await getFunctions();
+            const functionsWithDates = data.data.map((func: FunctionDTO) => ({
+                ...func,
+                date: new Date(func.date) // es necesario parsear la fecha a tipo date, el resto se deja como esta con ...func
+            }));
+            setFunctions(functionsWithDates);
+        } catch (error) {
+            console.error("Failed to fetch functions:", error);
+        }
     };
-    const updateFunction = (newFunction: FunctionDTO) => {
-        console.log(functions[newFunction.id - 1])
-        functions[newFunction.id - 1] = newFunction
-        setFunctions(functions);
+
+    const handleCloseInsert = () => { setShowInsert(false); }
+    const handleShowInsert = () => { setShowInsert(true); }
+    const handleCloseEdit = () => { setEditModalState({ ...editModalState, show: false }); }
+    const handleShowEdit = (func: FunctionDTO) => {
+        setEditModalState({
+            show: true,
+            functionId: func.id,
+            defaultTitle: func.movieTitle,
+            defaultDate: func.date,
+            defaultPrice: func.price
+        });
     };
+
+
+    const handleAddFunction = async (newFunction: FunctionDTO) => {
+        try {
+            await addFunction(newFunction);
+            fetchFunctions();
+        } catch (error) {
+            console.error("Failed to add function:", error);
+        }
+        handleCloseInsert();
+    };
+
+    const handleUpdateFunction = async (newFunction: FunctionDTO) => {
+        try {
+            await updateFunction(newFunction.id, newFunction);
+            fetchFunctions();
+        } catch (error) {
+            console.error("Failed to update function:", error);
+        }
+        handleCloseEdit();
+    };
+
+    const handleDeleteFunction = async (id: number) => {
+        try {
+            await deleteFunction(id);
+            fetchFunctions();
+        } catch (error) {
+            console.error("Failed to delete function:", error);
+        }
+    };
+
     return (
         <>
             <Button onClick={handleShowInsert} className='w-25 m-2 btn btn-primary'> + </Button>
@@ -64,49 +117,36 @@ const FunctionTable = () => {
                                         Acciones
                                     </Dropdown.Toggle>
                                     <Dropdown.Menu>
-                                        <Dropdown.Item onClick={() => {
-                                            setEditModalState({
-                                                show: true,
-                                                functionId: func.id,
-                                                defaultTitle: func.movieTitle,
-                                                defaultDate: func.date,
-                                                defaultPrice: func.price
-                                            });
-                                        }}>Editar</Dropdown.Item>
-                                        <Dropdown.Item onClick={() => deleteFunction(func.id)}>Borrar</Dropdown.Item>
+                                        <Dropdown.Item onClick={() => handleShowEdit(func)}>Editar</Dropdown.Item>
+                                        <Dropdown.Item onClick={() => handleDeleteFunction(func.id)}>Borrar</Dropdown.Item>
                                     </Dropdown.Menu>
                                 </Dropdown>
-                                {/* <ModalElement defaultId={functions.length + 1} defaultTitle={''} defaultDate={new Date} defaultPrice={0} handleClose={handleCloseInsert} show={showInsert} setShow={setShowInsert} functionApply={addFunction} />
-                                <ModalElement defaultId={editFunctionId} defaultTitle={editFunctionTitle} defaultDate={editFunctionDate} defaultPrice={editFunctionPrice} handleClose={handleCloseEdit} show={showEdit} setShow={setShowEdit} functionApply={updateFunction} /> */}
-
-                                {/* Modal para editar función */}
-                                <ModalElement
-                                    defaultId={editModalState.functionId}
-                                    defaultTitle={editModalState.defaultTitle}
-                                    defaultDate={editModalState.defaultDate}
-                                    defaultPrice={editModalState.defaultPrice}
-                                    handleClose={() => setEditModalState({ ...editModalState, show: false })}
-                                    show={editModalState.show}
-                                    functionApply={updateFunction}
-                                    functionsNow={functions}
-                                />
-
-                                {/* Modal para agregar nueva función */}
-                                <ModalElement
-                                    defaultId={functions.length + 1}
-                                    defaultTitle=""
-                                    defaultDate={new Date()}
-                                    defaultPrice={0}
-                                    handleClose={handleCloseInsert}
-                                    show={showInsert}
-                                    functionApply={addFunction}
-                                    functionsNow={functions}
-                                />
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </Table>
+            <ModalElement
+                defaultId={editModalState.functionId}
+                defaultTitle={editModalState.defaultTitle}
+                defaultDate={editModalState.defaultDate}
+                defaultPrice={editModalState.defaultPrice}
+                handleClose={() => setEditModalState({ ...editModalState, show: false })}
+                show={editModalState.show}
+                functionApply={handleUpdateFunction}
+                functionsNow={functions}
+            />
+
+            <ModalElement
+                defaultId={defaultIDSequentially(functions)}
+                defaultTitle=""
+                defaultDate={new Date()}
+                defaultPrice={0}
+                handleClose={handleCloseInsert}
+                show={showInsert}
+                functionApply={handleAddFunction}
+                functionsNow={functions}
+            />
         </>
     );
 };

@@ -1,0 +1,116 @@
+[
+    {
+        "id": 2,
+        "movieTitle": "El Patron: Radiograf\u00c3\u00ada de un Crimen",
+        "date": "2024-05-03T13:00:00",
+        "price": 80.0
+    },
+    {
+        "id": 3,
+        "movieTitle": "Inception",
+        "date": "2024-04-30T23:30:00",
+        "price": 100.0
+    },
+    {
+        "id": 4,
+        "movieTitle": "The Dark Knight",
+        "date": "2024-05-01T15:00:00",
+        "price": 80.0
+    },
+    {
+        "id": 5,
+        "movieTitle": "Titanic",
+        "date": "2024-05-02T20:30:00",
+        "price": 90.0
+    },
+    {
+        "id": 6,
+        "movieTitle": "Parasite",
+        "date": "2024-05-03T18:45:00",
+        "price": 85.0
+    },
+    {
+        "id": 7,
+        "movieTitle": "The Godfather",
+        "date": "2024-05-04T14:00:00",
+        "price": 75.0
+    },
+    {
+        "id": 8,
+        "movieTitle": "Toy Story",
+        "date": "2024-05-05T19:15:00",
+        "price": 95.0
+    },
+    {
+        "id": 9,
+        "movieTitle": "Avatar",
+        "date": "2024-05-06T21:30:00",
+        "price": 85.0
+    },
+    {
+        "id": 10,
+        "movieTitle": "Jurassic Park",
+        "date": "2024-05-07T16:45:00",
+        "price": 70.0
+    },
+    {
+        "id": 11,
+        "movieTitle": "El Clan",
+        "date": "2024-05-08T12:00:00",
+        "price": 75.0
+    },
+    {
+        "id": 12,
+        "movieTitle": "El Patron: Radiograf\u00c3\u00ada de un Crimen",
+        "date": "2024-05-09T17:30:00",
+        "price": 85.0
+    },
+    {
+        "id": 13,
+        "movieTitle": "Inception",
+        "date": "2024-05-10T20:00:00",
+        "price": 90.0
+    },
+    {
+        "id": 14,
+        "movieTitle": "The Dark Knight",
+        "date": "2024-05-11T14:15:00",
+        "price": 80.0
+    },
+    {
+        "id": 15,
+        "movieTitle": "Titanic",
+        "date": "2024-05-12T18:45:00",
+        "price": 95.0
+    },
+    {
+        "id": 16,
+        "movieTitle": "Parasite",
+        "date": "2024-05-13T21:00:00",
+        "price": 85.0
+    },
+    {
+        "id": 17,
+        "movieTitle": "The Godfather",
+        "date": "2024-05-14T16:30:00",
+        "price": 70.0
+    },
+    {
+        "id": 18,
+        "movieTitle": "Toy Story",
+        "date": "2024-05-15T19:45:00",
+        "price": 75.0
+    },
+    {
+        "id": 19,
+        "movieTitle": "Avatar",
+        "date": "2024-05-16T22:00:00",
+        "price": 85.0
+    },
+    {
+        "id": 20,
+        "movieTitle": "Jurassic Park",
+        "date": "2024-05-17T13:45:00",
+        "price": 90.0
+    }
+]

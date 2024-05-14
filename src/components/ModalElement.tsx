@@ -1,26 +1,27 @@
-import React, { useEffect, useState } from 'react'
-import { Button, Form, Modal } from 'react-bootstrap'
+import React, { useEffect, useState } from 'react';
+import { Button, Form, Modal } from 'react-bootstrap';
 import { FunctionDTO } from './function.model';
 import { TooManyInternationals, TooManyOfDirector } from './BusinessRules';
 import movieList from '../utils/Movies';
 import { MovieDTO } from './movies.model';
-
 
 const formatDate = (date: Date) => {
     if (!date) return '';
     return date.toISOString().slice(0, 16);
 };
 
-export default function ModalElement(props: ModalELementProps) {
+const getFunctionNationality = (func: FunctionDTO, movies: MovieDTO[]): boolean | null => {
+    const movie = movies.find(movie => movie.title === func.movieTitle);
+    return movie ? movie.isNational : null;
+};
 
+export default function ModalElement(props: ModalELementProps) {
     const [title, setTitle] = useState(props.defaultTitle);
     const [date, setDate] = useState(formatDate(props.defaultDate));
     const [price, setPrice] = useState(props.defaultPrice);
 
-    const getDirectorNameForFunction = (func: FunctionDTO, movies: MovieDTO[]): string | undefined => {
+    const getDirectorNameForFunction = (func: FunctionDTO, movies: MovieDTO[]) => {
         const movie = movies.find(movie => movie.title === func.movieTitle);
-        console.log(func.movieTitle)
-        console.log(props.defaultTitle)
         return movie ? movie.director : undefined;
     };
 
@@ -37,21 +38,26 @@ export default function ModalElement(props: ModalELementProps) {
             date: new Date(date),
             price: price
         };
-        const directorName = getDirectorNameForFunction(functionData, movieList)
-        console.log(functionData)
+        const directorName = getDirectorNameForFunction(functionData, movieList);
+        const nationality = getFunctionNationality(functionData, movieList)
         if (typeof directorName === 'string') {
-            const tooManyInternationals = TooManyInternationals(props.functionsNow, movieList, functionData.date);
+            const tooManyInternationals = TooManyInternationals(props.functionsNow, movieList, functionData.date) && !nationality;
             const tooManyOfDirector = TooManyOfDirector(props.functionsNow, movieList, directorName, functionData.date);
-            !tooManyInternationals && !tooManyOfDirector ? props.functionApply(functionData) : console.log('Se incumple alguna regla')
+            if (!tooManyInternationals && !tooManyOfDirector) {
+                if (functionData.price > 0) {
+                    props.functionApply(functionData);
+                }
+                else {
+                    console.log('El precio debe ser positivo')
+                }
+            } else {
+                console.log('Se incumple alguna regla');
+            }
         } else {
             console.log('El nombre del director no está disponible para esta función.');
         }
-
-
-
         props.handleClose();
     };
-    const defaultDateString = props.defaultDate.toISOString().slice(0, 16);
 
     return (
         <Modal show={props.show} onHide={props.handleClose}>
@@ -61,7 +67,7 @@ export default function ModalElement(props: ModalELementProps) {
             <Modal.Body>
                 <Form>
                     <Form.Group className="mb-3">
-                        <Form.Label >ID</Form.Label>
+                        <Form.Label>ID</Form.Label>
                         <Form.Control type="text" readOnly defaultValue={props.defaultId} />
                     </Form.Group>
                     <Form.Group className="mb-3">
@@ -74,29 +80,29 @@ export default function ModalElement(props: ModalELementProps) {
                                 </option>
                             ))}
                         </Form.Control>
-
                     </Form.Group>
                     <Form.Group className="mb-3">
                         <Form.Label>Fecha y Hora</Form.Label>
-                        <Form.Control type="datetime-local" defaultValue={defaultDateString} onChange={(e) => setDate(e.target.value)} />
+                        <Form.Control type="datetime-local" value={date} onChange={(e) => setDate(e.target.value)} />
                     </Form.Group>
                     <Form.Group className="mb-3">
                         <Form.Label>Precio</Form.Label>
-                        <Form.Control type="number" defaultValue={props.defaultPrice} onChange={(e) => setPrice(parseFloat(e.target.value))} />
+                        <Form.Control type="number" value={price} onChange={(e) => setPrice(parseFloat(e.target.value))} />
                     </Form.Group>
                 </Form>
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={props.handleClose}>
-                    Close
+                    Cerrar
                 </Button>
                 <Button variant="primary" onClick={handleSaveChanges}>
-                    Save Changes
+                    Guardar cambios
                 </Button>
             </Modal.Footer>
         </Modal>
-    )
+    );
 }
+
 interface ModalELementProps {
     defaultId: number
     defaultDate: Date

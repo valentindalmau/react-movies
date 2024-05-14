@@ -1,9 +1,9 @@
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { MovieDTO } from './movies.model'
 import functionList from '../utils/Functions'
 import movieList from '../utils/Movies'
 import { FunctionDTO } from './function.model'
-import { Button, Table } from 'react-bootstrap'
+import { Table } from 'react-bootstrap'
 import Image from 'react-bootstrap/Image';
 import Badge from 'react-bootstrap/Badge';
 
